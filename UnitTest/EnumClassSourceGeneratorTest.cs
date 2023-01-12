@@ -6,32 +6,51 @@ using RichEnum.Attribute;
 
 namespace UnitTest;
 
-public class UnitTest1
+[UsesVerify]
+public class EnumClassSourceGeneratorTest
 {
     [Fact]
-    public void Test1()
+    public Task GenerateFullTest()
     {
         var input = """
-using System.ComponentModel;
-
 namespace Test
 {
-    [Flags]
     [RichEnum.Attribute.RichEnumAttribute]
-    enum State
+    public enum States
     {
-        [Description("Rrrrrrr")]
-        Running,
-        [Description("Sssssss")]
-        Stopped
+        None,
+        [System.ComponentModel.Description("Service Running")] Running,
+        [System.ComponentModel.Description("Service Stopped")] Stopped
     }
 }
 """;
         var (diagnostics, output) = GetGeneratedOutput<EnumClassSourceGenerator>(input);
-        
+
+        Assert.Empty(diagnostics);
+        return Verify(output).UseDirectory("Snapshots");
     }
-    
-    
+
+    [Fact]
+    public Task GenerateNothingTest()
+    {
+        var input = """
+namespace Test
+{
+    public enum States
+    {
+        [System.ComponentModel.Description("Unknown State")] None,
+        [System.ComponentModel.Description("Service Running")] Running,
+        [System.ComponentModel.Description("Service Stopped")] Stopped
+    }
+}
+""";
+        var (diagnostics, output) = GetGeneratedOutput<EnumClassSourceGenerator>(input);
+
+        Assert.Empty(diagnostics);
+        return Verify(output).UseDirectory("Snapshots");
+    }
+
+
     public static (ImmutableArray<Diagnostic> Diagnostics, string Output) GetGeneratedOutput<T>(string source)
         where T : IIncrementalGenerator, new()
     {
@@ -43,12 +62,13 @@ namespace Test
             {
                 MetadataReference.CreateFromFile(typeof(T).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(RichEnumAttribute).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.DisplayAttribute).Assembly
+                    .Location),
             });
 
         var compilation = CSharpCompilation.Create(
             "generator",
-            new[] { syntaxTree },
+            new[] {syntaxTree},
             references,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
@@ -62,5 +82,4 @@ namespace Test
 
         return (diagnostics, trees.Count != originalTreeCount ? trees[trees.Count - 1].ToString() : string.Empty);
     }
-    
 }

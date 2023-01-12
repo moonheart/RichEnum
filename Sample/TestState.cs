@@ -1,7 +1,13 @@
-﻿namespace Test
+﻿namespace Sample
 {
+    /// <summary>
+    /// Generated Rich Enum from <see cref=""/>
+    /// </summary>
     public record States: IComparable<States>
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public static readonly States None = new(0, nameof(None), "Unknow State");
         public static readonly States Running = new(1, nameof(Running), "Service Running");
         public static readonly States Stopped = new(2, nameof(Stopped), "Service Stopped");
@@ -9,15 +15,27 @@
         private readonly string _name;
         private readonly string _description;
 
+        /// <summary>
+        /// Get Rich Enum Name
+        /// </summary>
+        /// <returns>Enum Name</returns>
         public override string ToString() => _name;
         public string Description() => _description;
 
+        /// <summary>
+        /// Get Rich Enums names array
+        /// </summary>
+        /// <returns></returns>
         public static string[] GetNames() => new[]
         {
             nameof(None),
             nameof(Running),
             nameof(Stopped),
         };
+        /// <summary>
+        /// Get Rich Enums values array
+        /// </summary>
+        /// <returns></returns>
         public static States[] GetValues() => new[]
         {
             None,
