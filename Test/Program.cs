@@ -7,28 +7,27 @@ static partial class Program
 {
     static void Main()
     {
-        RichEnum.Generated.MyNamespace.State state = 1;
-        RichEnum.Generated.MyNamespace.State state2 = 2;
-        RichEnum.Generated.MyNamespace.State i = state | state2;
+        RichEnum.Generated.MyNamespace.States state1 = 1;
+        RichEnum.Generated.MyNamespace.States.TryParse("Stopped", out var state2);
+        RichEnum.Generated.MyNamespace.States.TryParse("StOPPed", true, out var state3);
+        RichEnum.Generated.MyNamespace.States r1 = state1 | state2;
+        RichEnum.Generated.MyNamespace.States r2 = state1 & state2;
+        RichEnum.Generated.MyNamespace.States r3 = state1 ^ state2;
 
-        State s1 = (State) 1;
-        State s2 = (State) 2;
-        var x = s1 & s2;
-        var x2 = s1 ^ s2;
-        var x3 = ~s1;
-        var x4 = ++s1;
-        var x5 = --s1;
+        Console.WriteLine(state1);
+        Console.WriteLine(state2);
+        Console.WriteLine(state3);
+        Console.WriteLine(r1);
+        Console.WriteLine(r2);
+        Console.WriteLine(r3);
     }
-    
 }
 
 [Flags]
 [RichEnum]
-enum State
+public enum States
 {
-    [Description("ddd")]
-    Running, 
-    [Description("Sssssss")]
-    Stopped
+    [Description("Unknow State")] None,
+    [Description("Service Running")] Running,
+    [Description("Service Stopped")] Stopped
 }
-

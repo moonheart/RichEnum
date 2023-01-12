@@ -4,7 +4,7 @@ namespace RichEnum;
 
 public static class GeneratorHelper
 {
-    public static string Attribute = @"
+    public const string Attribute = @"
 namespace RichEnum.Attribute
 {
     [AttributeUsage(AttributeTargets.Enum)]
@@ -27,19 +27,31 @@ namespace RichEnum.Generated.{1}
     public record {0}: IComparable<{0}>
     {{", name, enumToGenerate.Namespace);
         foreach (var enumValue in enumToGenerate.EnumValues)
-        {
             sb.AppendFormat(@"
-        public static {0} {1} = new({2}, nameof({1}), ""{3}"");", name, enumValue.Name,
+        public static readonly {0} {1} = new({2}, nameof({1}), ""{3}"");", name, enumValue.Name,
                 enumValue.UnderlyingValue, enumValue.Description);
-        }
-
         sb.Append(@"
         private readonly int _value;
         private readonly string _name;
         private readonly string _description;
 
         public override string ToString() => _name;
-        public string Description() => _description;").AppendFormat(@"
+        public string Description() => _description;
+
+        public static string[] GetNames() => new[]
+        {");
+        foreach (var enumValue in enumToGenerate.EnumValues)
+            sb.AppendFormat(@"
+            nameof({0}),", enumValue.Name);
+        sb.AppendFormat(@"
+        }};
+        public static {0}[] GetValues() => new[]
+        {{", name);
+        foreach (var enumValue in enumToGenerate.EnumValues)
+            sb.AppendFormat(@"
+            {0},", enumValue.Name);
+        sb.AppendFormat(@"
+        }};
 
         public static {1} operator |({1} a, {1} b) => a._value | b._value;
         public static {1} operator &({1} a, {1} b) => a._value & b._value;
@@ -52,29 +64,49 @@ namespace RichEnum.Generated.{1}
             switch (value)
             {{", name, underlyingType);
         foreach (var enumValue in enumToGenerate.EnumValues)
-        {
             sb.AppendFormat(@"
                 case {0}: return {1};", enumValue.UnderlyingValue, enumValue.Name);
-        }
-
-        sb.Append(@"
-                default: throw new ArgumentOutOfRangeException(nameof(value));
-            }
-        }").AppendFormat(@"
-        public static implicit operator {0}(string name)
+        sb.AppendFormat(@"
+                default: return new {0}(value, """", """");
+            }}
+        }}", name).AppendFormat(@"
+        private static bool TryParseIgnoreCase([System.Diagnostics.CodeAnalysis.NotNullWhen(true)] string? name, out {0} value)
         {{
             switch (name)
             {{", name);
         foreach (var enumValue in enumToGenerate.EnumValues)
-        {
             sb.AppendFormat(@"
-                case nameof({0}): return {0};", enumValue.Name);
-        }
-
+                case {{ }} s when nameof({0}).Equals(s, System.StringComparison.OrdinalIgnoreCase):
+                    value = {0};
+                    return true;", enumValue.Name);
         sb.Append(@"
-                default: throw new ArgumentOutOfRangeException(nameof(name));
+                default:
+                    value = default;
+                    return false;
             }
         }").AppendFormat(@"
+        public static bool TryParse([System.Diagnostics.CodeAnalysis.NotNullWhen(true)] string? name, out {0} value)
+        {{
+            switch (name)
+            {{", name);
+        foreach (var enumValue in enumToGenerate.EnumValues)
+            sb.AppendFormat(@"
+                case nameof({0}):
+                    value = {0};
+                    return true;", enumValue.Name);
+        sb.Append(@"
+                default:
+                    value = default;
+                    return false;
+            }
+        }");
+        sb.AppendFormat(@"
+        public static bool TryParse(
+            [System.Diagnostics.CodeAnalysis.NotNullWhen(true)] string? name,
+            bool ignoreCase,
+            out {0} value)
+            => ignoreCase ? TryParseIgnoreCase(name, out value) : TryParse(name, out value);", name);
+        sb.AppendFormat(@"
         private {0}({1} value, string name, string description)
         {{
             _value = value;
@@ -90,7 +122,7 @@ namespace RichEnum.Generated.{1}
         }}
     }}
 }}", name);
-        
+
         return sb.ToString();
     }
 }
