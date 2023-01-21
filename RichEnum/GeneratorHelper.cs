@@ -7,7 +7,7 @@ public static class GeneratorHelper
     public const string Attribute = @"
 namespace RichEnum.Attribute
 {
-    [AttributeUsage(AttributeTargets.Enum)]
+    [System.AttributeUsage(System.AttributeTargets.Enum)]
     public class RichEnumAttribute: System.Attribute
     {
         
