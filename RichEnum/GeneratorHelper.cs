@@ -37,7 +37,7 @@ namespace {1}.Generated
     /// <summary>
     /// Generated Rich Enum from <see cref=""{1}.{0}""/>
     /// </summary>
-    public record {0}: IComparable<{0}>
+    public record {0}: System.IComparable<{0}>
     {{", name, enumToGenerate.Namespace);
         foreach (var enumValue in enumToGenerate.EnumValues)
             sb.AppendFormat(@"
