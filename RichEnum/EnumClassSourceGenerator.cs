@@ -31,7 +31,7 @@ public class EnumClassSourceGenerator : IIncrementalGenerator
     {
         if (enumToGenerate is { } eg)
         {
-            var result = GeneratorHelper.GenerateEnumRecord(enumToGenerate);
+            var result = GeneratorHelper.GenerateEnumRecord(eg);
             context.AddSource($"{eg.Namespace}.{eg.Name}.g.cs", SourceText.From(result, Encoding.UTF8));
         }
     }
