@@ -61,7 +61,28 @@ public class EnumClassSourceGenerator : IIncrementalGenerator
             enumValues.Add(enumValue);
         }
 
-        return new EnumToGenerate(enumName, containingNamespace, underlyingType, enumValues);
+        var enableLocalization = false;
+        var resourceNamager = "";
+        var attributeData = namedTypeSymbol.GetAttributes()
+            .FirstOrDefault(d => d.AttributeClass?.ToString() == RichEnumAttribute);
+        if (attributeData != null)
+            foreach (var attributeDataNamedArgument in attributeData.NamedArguments)
+            {
+                if (attributeDataNamedArgument.Key == "EnableLocalization" &&
+                    attributeDataNamedArgument.Value.Value is bool el)
+                {
+                    enableLocalization = el;
+                }
+
+                if (attributeDataNamedArgument.Key == "ResourceManager" &&
+                    attributeDataNamedArgument.Value.Value?.ToString() is { } rm)
+                {
+                    resourceNamager = rm;
+                }
+            }
+
+        return new EnumToGenerate(enumName, containingNamespace, underlyingType, enumValues, enableLocalization,
+            resourceNamager);
     }
 
     private static string? GetDesc(IFieldSymbol member)

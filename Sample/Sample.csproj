@@ -11,4 +11,19 @@
       <ProjectReference Include="..\RichEnum\RichEnum.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Update="Localize.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Localize.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Localize.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Localize.resx</DependentUpon>
+      </Compile>
+    </ItemGroup>
+
 </Project>

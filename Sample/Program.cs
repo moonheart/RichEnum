@@ -1,4 +1,8 @@
-﻿namespace MyNamespace;
+﻿using System.Linq.Expressions;
+using System.Resources;
+using Sample;
+
+namespace MyNamespace;
 
 static partial class Program
 {
@@ -20,7 +24,7 @@ static partial class Program
     }
 }
 
-[RichEnum.Attribute.RichEnumAttribute]
+[RichEnum.Attribute.RichEnumAttribute(EnableLocalization = true, ResourceManager = "Sample.Localize.ResourceManager")]
 public enum States
 {
     [System.ComponentModel.Description("Unknow State")] None,

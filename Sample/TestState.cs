@@ -21,6 +21,7 @@
         /// <returns>Enum Name</returns>
         public override string ToString() => _name;
         public string Description() => _description;
+        public string Description1() => _description;
 
         /// <summary>
         /// Get Rich Enums names array
