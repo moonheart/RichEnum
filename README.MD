@@ -5,7 +5,7 @@ Generate a substitute for your enum
 User Code
 
 ```csharp
-[RichEnum.Attribute.RichEnumAttribute]
+[RichEnum.Attribute.RichEnumAttribute(EnableLocalization = true, ResourceManager = "Sample.Localize.ResourceManager")]
 public enum States
 {
     [System.ComponentModel.Description("Unknow State")] None,
@@ -20,7 +20,7 @@ Generated Code
     /// <summary>
     /// Generated Rich Enum from <see cref="MyNamespace.States"/>
     /// </summary>
-    public record States: IComparable<States>
+    public record States: System.IComparable<States>
     {
         /// <summary>
         /// Unknow State 
@@ -37,19 +37,17 @@ Generated Code
         private readonly int _value;
         private readonly string _name;
         private readonly string _description;
-
         /// <summary>
         /// Get Rich Enum name
         /// </summary>
         /// <returns>Enum Name</returns>
-        public override string ToString() => _name;
+        public override string? ToString() => Description();
 
         /// <summary>
-        /// Get Rich Enum description
+        /// Get Rich Enum description with localization
         /// </summary>
         /// <returns>Enum description</returns>
-        public string Description() => _description;
-
+        public string? Description() => Sample.Localize.ResourceManager.GetString(_description);
         /// <summary>
         /// Get Rich Enums names array
         /// </summary>
